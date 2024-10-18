@@ -2,6 +2,7 @@
 #
 
 from socket import *
+import sys
 from multiprocessing import Process, Lock
 
 
@@ -30,12 +31,22 @@ def connection():
     print("Connection closed.")
 
 
-def main():
-    # initialize port and socket interface
+def main(argc, argv):
+    # this is the default port number if none specified
     server_port = 8080
-    server_socket = socket(AF_INET, SOCK_STREAM)
+    server_socket = None
 
-    # assign port to server's socket
+    # get port number from cmd args if given by user
+    # if more arguments are given, they will be ignored
+    if argc > 1:
+        try:
+            server_port = int(argv[1])
+        except ValueError:
+            print("Incorrect port value given.\nExiting...")
+            sys.exit()
+
+    # Server setup
+    server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind(('', server_port))
 
     # start listening for new connections
@@ -49,4 +60,4 @@ def main():
         
 
 if __name__ == "__main__":
-    main()
+    main(len(sys.argv), sys.argv)
